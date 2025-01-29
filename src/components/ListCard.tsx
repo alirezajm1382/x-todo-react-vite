@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useContext, useMemo } from "react";
 
 //MUI components and Icon
 import { Celebration, Check, Delete } from "@mui/icons-material";
@@ -28,23 +28,29 @@ const ListCard: FunctionComponent = () => {
     setItems([...filteredList, { ...filteredItem[0], isDone: true }]);
   };
 
+  const undoneTasks = useMemo(() => {
+    return items.filter((item) => item.isDone === false);
+  }, [items]);
+
   return (
     <Card variant="soft">
       <CardContent>
         <Typography fontSize={16} fontWeight={600}>
-          {`Tasks to do ${items.length === 0 ? "" : `- (${items.length})`}`}
+          {`Tasks to do ${
+            undoneTasks.length === 0 ? "" : `- (${undoneTasks.length})`
+          }`}
         </Typography>
       </CardContent>
       <Divider />
       <CardContent>
         <Stack
           flexDirection="column"
-          alignItems={items.length === 0 ? "center" : "flex-start"}
+          alignItems={undoneTasks.length === 0 ? "center" : "flex-start"}
           marginY={1}
           marginX={0}
           rowGap={2}
         >
-          {items.length === 0 ? (
+          {undoneTasks.length === 0 ? (
             <>
               <Celebration />
               <Typography
@@ -57,64 +63,65 @@ const ListCard: FunctionComponent = () => {
               </Typography>
             </>
           ) : (
-            items
-              .filter((item) => item.isDone === false)
-              .map((item: TodoItemProps) => (
-                <Card sx={{ width: "-webkit-fill-available" }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      margin: 0,
-                    }}
-                    key={item.id}
-                  >
-                    <Stack flexDirection="column">
-                      <Typography
-                        fontSize={20}
-                        fontWeight={400}
-                        textOverflow="ellipsis"
-                      >
-                        {item.context}
-                      </Typography>
-                      <Typography fontSize={10}>{item.id}</Typography>
-                    </Stack>
-                    <Stack flexDirection="row" gap={1}>
-                      <IconButton
-                        onClick={() => handleCheckItem(item.id)}
-                        variant="outlined"
-                        sx={{
-                          alignSelf: "flex-top",
-                        }}
-                      >
-                        <Check
-                          sx={{
-                            ":hover": {
-                              color: "green",
-                            },
-                          }}
-                        />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteItem(item.id)}
-                        variant="outlined"
-                        sx={{
-                          alignSelf: "flex-top",
-                        }}
-                      >
-                        <Delete
-                          sx={{
-                            ":hover": {
-                              color: "red",
-                            },
-                          }}
-                        />
-                      </IconButton>
-                    </Stack>
-                  </Box>
-                </Card>
-              ))
+            undoneTasks.map((undoneItem: TodoItemProps) => (
+              <Card sx={{ width: "-webkit-fill-available" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    gap: "10px",
+                    margin: 0,
+                  }}
+                  key={undoneItem.id}
+                >
+                  <Stack flexDirection="column" spacing={2}>
+                    <Typography
+                      fontSize={20}
+                      fontWeight={400}
+                      textOverflow="ellipsis"
+                    >
+                      {undoneItem.context}
+                    </Typography>
+                    <Typography fontSize={10}>{undoneItem.id}</Typography>
+                  </Stack>
+                  <Stack flexDirection="row" gap={1}>
+                    <IconButton
+                      onClick={() => handleCheckItem(undoneItem.id)}
+                      variant="outlined"
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        alignSelf: "flex-top",
+                        transition: "all 0.2s",
+                        ":hover": {
+                          color: "white",
+                          backgroundColor: "#4caf50",
+                        },
+                      }}
+                    >
+                      <Check />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDeleteItem(undoneItem.id)}
+                      variant="outlined"
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        alignSelf: "flex-top",
+                        transition: "all 0.2s",
+                        ":hover": {
+                          color: "white",
+                          backgroundColor: "#ef5350",
+                        },
+                      }}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Stack>
+                </Box>
+              </Card>
+            ))
           )}
         </Stack>
       </CardContent>
